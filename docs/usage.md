@@ -96,6 +96,25 @@ Starting with Bismark `v0.21.0`, the pipeline also supports [HISAT2](https://ccb
 
 > HISAT2 offers splice-aware alignment, making it suitable for RNA-based analyses (e.g., [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments). For such cases, you can supply a file with known splice sites using the `--known_splices` parameter.
 
+#### Running with the Rust Bismark suite (optional, opt-in)
+
+The Bismark tools are being [reimplemented in Rust](https://github.com/FelixKrueger/Bismark) (faster, lower memory, with **byte-identical** output to Perl Bismark `v0.25.1`). You can run the Bismark steps of this pipeline with the Rust suite instead of the default bioconda (Perl) Bismark by adding the opt-in **`bismark_rust`** profile, which points the `BISMARK_*` processes at a published, canonical-named container image (`ghcr.io/felixkrueger/bismark`). The image answers `bismark -v` with the `v0.25.1` banner, so methylation results **and** `versions.yml` are unchanged.
+
+```bash
+# Local (Docker):
+nextflow run nf-core/methylseq -profile test,docker,bismark_rust --outdir <OUTDIR>
+
+# Local (Wave):
+nextflow run nf-core/methylseq -profile test,wave,bismark_rust --outdir <OUTDIR>
+```
+
+Notes:
+
+- **Put `bismark_rust` LAST** in the `-profile` list. Nextflow merges profiles left-to-right (last wins); a `wave`/`arm64` profile listed _after_ `bismark_rust` would re-enable Wave's conda-first rebuild and silently fall back to Perl.
+- **Container/Wave engines only** — do **not** combine with `-profile conda` (the conda engine ignores `container`, and the profile clears the conda directive for these processes).
+- **On [Seqera Platform](https://seqera.io/platform/):** Wave is typically enabled at the compute-environment level, so just add **`bismark_rust`** to the launch _Profiles_ and set the _Revision_ to the branch/tag you want. (No upstream merge required — you can launch directly from a fork branch.)
+- **Scope:** non-`--local` runs. The Rust aligner accepts `--local` but currently exits with an error at config-resolve, so `bismark_rust` is intended for the default (end-to-end) Bismark configuration.
+
 ### Workflow: BWA-Meth
 
 The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) as the alignment tool and [MethylDackel](https://github.com/dpryan79/methyldackel) for post-processing.
