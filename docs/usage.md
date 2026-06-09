@@ -101,11 +101,11 @@ Starting with Bismark `v0.21.0`, the pipeline also supports [HISAT2](https://ccb
 The Bismark tools are being [reimplemented in Rust](https://github.com/FelixKrueger/Bismark) (faster, lower memory, with **byte-identical** output to Perl Bismark `v0.25.1`). You can run the Bismark steps of this pipeline with the Rust suite instead of the default bioconda (Perl) Bismark by adding the opt-in **`bismark_rust`** profile, which points the `BISMARK_*` processes at a published, canonical-named container image (`ghcr.io/felixkrueger/bismark`). The image answers `bismark -v` with the `v0.25.1` banner, so methylation results **and** `versions.yml` are unchanged.
 
 ```bash
-# Local (Docker):
-nextflow run nf-core/methylseq -profile test,docker,bismark_rust --outdir <OUTDIR>
+# Local (Docker) — the `bismark_rust` profile currently lives on the fork branch:
+nextflow run FelixKrueger/methylseq -r bismark-rust-profile -profile test,docker,bismark_rust --outdir <OUTDIR>
 
 # Local (Wave):
-nextflow run nf-core/methylseq -profile test,wave,bismark_rust --outdir <OUTDIR>
+nextflow run FelixKrueger/methylseq -r bismark-rust-profile -profile test,wave,bismark_rust --outdir <OUTDIR>
 ```
 
 Notes:
