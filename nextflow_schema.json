@@ -62,7 +62,7 @@
                 "unmapped": {
                     "type": "boolean",
                     "description": "Bismark only - Save unmapped reads to FastQ files",
-                    "help_text": "Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files.",
+                    "help_text": "Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files. This also works in Bismark's 5-Base/TAPS mode (`--illumina_5base` or `--taps` with `--aligner bismark`), where Bismark saves the pairs it counts as having no alignment.",
                     "fa_icon": "fas fa-recycle"
                 },
                 "save_trimmed": {

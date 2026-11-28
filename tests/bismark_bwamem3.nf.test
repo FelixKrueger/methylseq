@@ -9,7 +9,7 @@ nextflow_pipeline {
     def testScenarios = [
         [
             description: "Params: bismark | illumina_5base",
-            // trim_OT and bismark_index are ignored in this mode, so the outputs stay equal to the taps scenario's, plus the unmapped reads
+            // trim_OT and bismark_index are ignored in this mode, so the outputs stay equal to the taps scenario's
             params: [ illumina_5base: true, unmapped: true, trim_OT: "0,0,10,0", bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz", control_fasta: "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa" ],
             log_has: [ '--illumina_5base with --aligner bismark: Bismark aligns with bwa-mem3', '--trim_OT/--trim_OB only apply to rastair calls', "--bismark_index is not used by Bismark's 5-Base/TAPS mode", "--control_fasta is not supported in Bismark's 5-Base/TAPS mode" ],
             log_lacks: [ '--taps_caller only applies' ],
@@ -19,7 +19,7 @@ nextflow_pipeline {
         [
             description: "Params: bismark | taps | taps_caller rastair2",
             // rastair2 and methylsieve are not run: with --aligner bismark, Bismark makes the calls
-            params: [ taps: true, taps_caller: "rastair2", run_methylsieve: true, control_fasta: "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa" ],
+            params: [ taps: true, unmapped: true, taps_caller: "rastair2", run_methylsieve: true, control_fasta: "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa" ],
             log_has: [ '--taps with --aligner bismark: Bismark aligns with bwa-mem3', '--taps_caller only applies to rastair calls', '--run_methylsieve only applies on the rastair route', "--control_fasta is not supported in Bismark's 5-Base/TAPS mode" ],
             log_lacks: [],
             flag_has: '--taps --bwamem3',
@@ -81,6 +81,7 @@ nextflow_pipeline {
                     { assert unmapped_fq.size() == (unmapped ? 2 : 0) },
                     // Bismark writes exactly the pairs its report counts as having no alignments
                     { assert !unmapped || (!r1_names.isEmpty() && r1_names == r2_names) },
+                    // One sample: row 1 of alignment_stats and all unmapped files belong to taps_pe
                     { if (unmapped) { def column = alignment_stats[0].toList().indexOf('no_alignments'); assert column >= 0 && (alignment_stats[1][column] as double) == r1_names.size() } },
                     // methylated C reads as T: the methylated lambda spike-in should be high and the unmodified one low
                     { assert methylation.keySet().containsAll(['bacteriophage_lambda_CpG', '2kb_3_Unmodified']) },
